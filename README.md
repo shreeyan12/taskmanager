@@ -3,7 +3,7 @@
 TaskZen is a comprehensive task management application built with Django, featuring a clean, minimalistic UI and powerful functionality for organizing and tracking tasks.
 
 ## 🚀 Live Application
-**URL:** https://taskmanager-2-7mrw.onrender.com
+**URL:** https://taskmanager-3-30x9.onrender.com
 
 ## ✨ Key Features
 
