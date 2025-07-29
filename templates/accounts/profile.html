@@ -1,0 +1,122 @@
+{% extends 'base.html' %} {% block title %}Profile - TaskManager{% endblock %}
+{% block content %}
+<div class="main-container fade-in">
+  <div class="content-area">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <h2 class="mb-4">
+          <i class="fas fa-user-circle me-2"></i>User Profile
+        </h2>
+
+        <div class="card">
+          <div class="card-body p-4">
+            <div class="row">
+              <div class="col-md-6">
+                <h5>Account Information</h5>
+                <div class="mb-3">
+                  <label class="form-label small text-muted">Username</label>
+                  <div class="form-control-plaintext">{{ user.username }}</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-muted">Email</label>
+                  <div class="form-control-plaintext">
+                    {{ user.email|default:"Not provided" }}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-muted">Date Joined</label>
+                  <div class="form-control-plaintext">
+                    {{ user.date_joined|date:"M d, Y" }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <h5>Task Statistics</h5>
+                <div class="mb-3">
+                  <label class="form-label small text-muted">Total Tasks</label>
+                  <div class="form-control-plaintext">
+                    {{ user.tasks.count }}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-muted"
+                    >Completed Tasks</label
+                  >
+                  <div class="form-control-plaintext">
+                    {{ user.completed_tasks_count }}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label small text-muted"
+                    >Pending Tasks</label
+                  >
+                  <div class="form-control-plaintext">
+                    {{ pending_tasks_count }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Stats Icon -->
+            <svg
+              viewBox="0 0 32 32"
+              xmlns="http://www.w3.org/2000/svg"
+              class="stats-icon"
+            >
+              <defs>
+                <linearGradient
+                  id="statsGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
+                  <stop offset="0%" style="stop-color: #0ea5e9" />
+                  <stop offset="100%" style="stop-color: #0284c7" />
+                </linearGradient>
+              </defs>
+              <rect
+                x="4"
+                y="14"
+                width="6"
+                height="14"
+                rx="1"
+                stroke="url(#statsGradient)"
+                stroke-width="2"
+                fill="none"
+              />
+              <rect
+                x="13"
+                y="8"
+                width="6"
+                height="20"
+                rx="1"
+                stroke="url(#statsGradient)"
+                stroke-width="2"
+                fill="none"
+              />
+              <rect
+                x="22"
+                y="4"
+                width="6"
+                height="24"
+                rx="1"
+                stroke="url(#statsGradient)"
+                stroke-width="2"
+                fill="none"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <a href="{% url 'task_list' %}" class="btn btn-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Tasks
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,268 @@
+{% extends 'base.html' %} {% block title %}{{ task.title }} - TaskManager{%
+endblock %} {% block content %}
+<div class="main-container fade-in">
+  <div class="content-area">
+    <div class="row">
+      <div class="col-md-8">
+        <div class="d-flex align-items-center mb-4">
+          <a
+            href="{% url 'task_list' %}"
+            class="btn btn-outline-secondary me-3"
+          >
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <h2 class="mb-0">{{ task.title }}</h2>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <div class="flex-grow-1">
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                  <span class="badge bg-{{ task.priority }} text-white">
+                    <i class="fas fa-flag me-1"></i>{{ task.get_priority_display
+                    }}
+                  </span>
+                  <span class="badge bg-secondary">
+                    <i class="fas fa-info-circle me-1"></i>{{
+                    task.get_status_display }}
+                  </span>
+                  {% if task.category %}
+                  <span
+                    class="badge"
+                    style="background-color: {{ task.category.color }};"
+                  >
+                    <i class="fas fa-tag me-1"></i>{{ task.category.name }}
+                  </span>
+                  {% endif %} {% if task.due_date %}
+                  <span class="badge bg-warning text-dark">
+                    <i class="fas fa-calendar me-1"></i>{{ task.due_date|date:"M
+                    d, Y H:i" }}
+                  </span>
+                  {% endif %}
+                </div>
+
+                {% if task.description %}
+                <div class="mb-3">
+                  <h6>Description</h6>
+                  <p class="text-muted">{{ task.description|linebreaks }}</p>
+                </div>
+                {% endif %}
+
+                <div class="row text-muted small">
+                  <div class="col-md-6">
+                    <i class="fas fa-plus-circle me-1"></i>Created: {{
+                    task.created_at|date:"M d, Y H:i" }}
+                  </div>
+                  <div class="col-md-6">
+                    <i class="fas fa-edit me-1"></i>Updated: {{
+                    task.updated_at|date:"M d, Y H:i" }}
+                  </div>
+                  {% if task.completed_at %}
+                  <div class="col-12 mt-1">
+                    <i class="fas fa-check-circle me-1"></i>Completed: {{
+                    task.completed_at|date:"M d, Y H:i" }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="dropdown">
+                <button
+                  class="btn btn-outline-secondary dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                >
+                  <i class="fas fa-cog me-2"></i>Actions
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'task_edit' task.pk %}"
+                    >
+                      <i class="fas fa-edit me-2"></i>Edit Task
+                    </a>
+                  </li>
+                  <li>
+                    <form
+                      method="post"
+                      action="{% url 'task_toggle_status' task.pk %}"
+                      class="d-inline"
+                    >
+                      {% csrf_token %}
+                      <button type="submit" class="dropdown-item">
+                        {% if task.status == 'completed' %}
+                        <i class="fas fa-undo me-2"></i>Mark Incomplete {% else
+                        %} <i class="fas fa-check me-2"></i>Mark Complete {%
+                        endif %}
+                      </button>
+                    </form>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a
+                      class="dropdown-item text-danger"
+                      href="{% url 'task_delete' task.pk %}"
+                    >
+                      <i class="fas fa-trash me-2"></i>Delete Task
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">
+              <i class="fas fa-comments me-2"></i>Comments ({{ comments.count
+              }})
+            </h5>
+          </div>
+          <div class="card-body">
+            <!-- Add Comment Form -->
+            <form method="post" class="mb-4">
+              {% csrf_token %}
+              <div class="mb-3">{{ comment_form.content }}</div>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane me-2"></i>Add Comment
+              </button>
+            </form>
+
+            <!-- Comments List -->
+            {% for comment in comments %}
+            <div class="border-bottom pb-3 mb-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <strong>{{ comment.user.username }}</strong>
+                  <small class="text-muted ms-2"
+                    >{{ comment.created_at|date:"M d, Y H:i" }}</small
+                  >
+                </div>
+              </div>
+              <p class="mt-2 mb-0">{{ comment.content|linebreaks }}</p>
+            </div>
+            {% empty %}
+            <p class="text-muted text-center py-3">
+              No comments yet. Be the first to comment!
+            </p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-header">
+            <h6 class="mb-0">Task Information</h6>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label small text-muted">Assigned to</label>
+              <div>
+                <i class="fas fa-user me-2"></i>{{ task.user.username }}
+              </div>
+            </div>
+
+            {% if task.category %}
+            <div class="mb-3">
+              <label class="form-label small text-muted">Category</label>
+              <div>
+                <span
+                  class="badge"
+                  style="background-color: {{ task.category.color }};"
+                >
+                  {{ task.category.name }}
+                </span>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label class="form-label small text-muted">Priority</label>
+              <div>
+                <span class="badge bg-{{ task.priority }} text-white">
+                  {{ task.get_priority_display }}
+                </span>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small text-muted">Status</label>
+              <div>
+                <span class="badge bg-secondary">
+                  {{ task.get_status_display }}
+                </span>
+              </div>
+            </div>
+
+            {% if task.due_date %}
+            <div class="mb-3">
+              <label class="form-label small text-muted">Due Date</label>
+              <div>
+                <i class="fas fa-calendar me-2"></i>{{ task.due_date|date:"M d,
+                Y H:i" }} {% if task.is_overdue %}
+                <span class="badge bg-danger ms-2">Overdue</span>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Task Detail Icon -->
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="task-icon">
+  <defs>
+    <linearGradient id="taskGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color: #0ea5e9" />
+      <stop offset="100%" style="stop-color: #0284c7" />
+    </linearGradient>
+  </defs>
+  <circle
+    cx="16"
+    cy="16"
+    r="14"
+    fill="none"
+    stroke="url(#taskGradient)"
+    stroke-width="2"
+  />
+  <line
+    x1="8"
+    y1="16"
+    x2="24"
+    y2="16"
+    stroke="url(#taskGradient)"
+    stroke-width="2"
+  />
+  <line
+    x1="16"
+    y1="8"
+    x2="16"
+    y2="24"
+    stroke="url(#taskGradient)"
+    stroke-width="2"
+  />
+</svg>
+
+<style>
+  .badge.bg-urgent {
+    background-color: #ef4444 !important;
+  }
+  .badge.bg-high {
+    background-color: #f59e0b !important;
+  }
+  .badge.bg-medium {
+    background-color: #3b82f6 !important;
+  }
+  .badge.bg-low {
+    background-color: #10b981 !important;
+  }
+</style>
+{% endblock %}
